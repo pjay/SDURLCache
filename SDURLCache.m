@@ -542,6 +542,31 @@ static dispatch_queue_t get_disk_io_queue() {
     return isCached;
 }
 
+- (BOOL)isLocalCacheFreshForURL:(NSURL *)url {
+	NSURLRequest *request = [NSURLRequest requestWithURL:url];
+	request = [SDURLCache canonicalRequestForRequest:request];
+	
+	NSCachedURLResponse *cachedResponse = [self cachedResponseForRequest:request];
+	if (!cachedResponse) {
+		return NO;
+	}
+	
+	NSURLResponse *response = [cachedResponse response];
+	if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
+		// This method assumes an HTTP response in order to inspect its headers
+		return NO;
+	}
+	
+	NSDictionary *headers = [(NSHTTPURLResponse *)response allHeaderFields];
+	
+	NSDate *expirationDate = [SDURLCache expirationDateFromHeaders:headers withStatusCode:[(NSHTTPURLResponse *)response statusCode]];
+	if (!expirationDate) {
+		return NO;
+	}
+	
+	return [expirationDate compare:[NSDate date]] == NSOrderedDescending;
+}
+
 #pragma mark NSObject
 
 - (void)dealloc {

@@ -54,4 +54,6 @@
  */
 - (BOOL)isCached:(NSURL *)url;
 
+- (BOOL)isLocalCacheFreshForURL:(NSURL *)url;
+
 @end
