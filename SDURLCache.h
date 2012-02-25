@@ -13,8 +13,6 @@
 @interface SDURLCache : NSURLCache
 {
     @private
-    dispatch_queue_t _diskCacheQueue;
-    dispatch_queue_t _dateFormatterQueue;
     NSString *_diskCachePath;
     NSMutableDictionary *_diskCacheInfo;
     BOOL _diskCacheInfoDirty;
@@ -55,5 +53,11 @@
 - (BOOL)isCached:(NSURL *)url;
 
 - (BOOL)isLocalCacheFreshForURL:(NSURL *)url;
+
+/*
+ * Clears the receiver’s in-memory cache, removing all stored cached URL responses there.
+ * Has no effect on the on-disk cache.
+ */
+- (void)removeAllCachedResponsesInMemory;
 
 @end
